@@ -10,9 +10,10 @@
     var registerSession;
     var callSession;
     var callOptions = {
-            video_local: document.getElementById('video-local'),
-            video_remote: document.getElementById('video-remote'),
-            audio_remote: document.getElementById('audio-remote'),
+//            video_local: document.getElementById('video-local'),
+//            video_remote: document.getElementById('video-remote'),
+            audio_remote: document.getElementById('audio-remote'),            
+            sip_caps: [{name: '+g.oma.sip-im'},{name: 'language', value: '\"en,fr\"'}],
             events_listener: { events: '*', listener: sipSessionListener } // optional: '*' means all events
         };
 	
@@ -48,8 +49,17 @@
             SIPml.setDebugLevel((window.localStorage && window.localStorage.getItem('org.doubango.expert.disable_debug') == "true") ? "error" : "info");
 //			console.log(window.localStorage);
 
-			var realm = "ekiga.net";
+//			var realm = "ekiga.net";
+//			var proxy = "ws://ns313841.ovh.net:11060";
+			var outboundproxy = null;
+			
 			var realm = "officesip.local";
+			var proxy = "ws://192.168.1.26:5060";
+//			var outboundproxy = "udp://192.168.1.26:5060";
+//			alert(proxy);
+
+//			var realm = "192.168.1.32";
+//			var proxy = "ws://192.168.1.32:8088/ws";
 			
             // create SIP stack
             sipStack = new SIPml.Stack({
@@ -58,19 +68,19 @@
                     impu: "sip:"+txtUser.value+"@"+realm,
                     password: txtPwd.value,
                     display_name: txtUser.value,
-					websocket_proxy_url: "ws://130.240.92.227:5060",//(window.localStorage ? window.localStorage.getItem('org.doubango.expert.websocket_server_url') : null),
-//                    outbound_proxy_url: "udp://130.240.92.227:5060",//(window.localStorage ? window.localStorage.getItem('org.doubango.expert.sip_outboundproxy_url') : null),
-//                    ice_servers: (window.localStorage ? window.localStorage.getItem('org.doubango.expert.ice_servers') : null),
-//                    enable_rtcweb_breaker: (window.localStorage ? window.localStorage.getItem('org.doubango.expert.enable_rtcweb_breaker') == "true" : false),
+					websocket_proxy_url: proxy,//(window.localStorage ? window.localStorage.getItem('org.doubango.expert.websocket_server_url') : null),
+                    outbound_proxy_url: outboundproxy,//"udp://130.240.92.227:5060",//(window.localStorage ? window.localStorage.getItem('org.doubango.expert.sip_outboundproxy_url') : null),
+                    ice_servers: [{ url: 'stun:stun.l.google.com:19302'}],//(window.localStorage ? window.localStorage.getItem('org.doubango.expert.ice_servers') : null),
+                    enable_rtcweb_breaker: false,//(window.localStorage ? window.localStorage.getItem('org.doubango.expert.enable_rtcweb_breaker') == "true" : false),
                     events_listener: { events: '*', listener: sipEventsListener },
 //                    enable_early_ims: (window.localStorage ? window.localStorage.getItem('org.doubango.expert.disable_early_ims') != "true" : true), // Must be true unless you're using a real IMS network
 //                    enable_media_stream_cache: (window.localStorage ? window.localStorage.getItem('org.doubango.expert.enable_media_caching') == "true" : false),
 //                    bandwidth: (window.localStorage ? tsk_string_to_object(window.localStorage.getItem('org.doubango.expert.bandwidth')) : null), // could be redefined a session-level
 //                    video_size: (window.localStorage ? tsk_string_to_object(window.localStorage.getItem('org.doubango.expert.video_size')) : null), // could be redefined a session-level
-//                    sip_headers: [
-//                            { name: 'User-Agent', value: 'IM-client/OMA1.0 sipML5-v1.2015.03.18' },
-//                            { name: 'Organization', value: 'Doubango Telecom' }
-//                    ]
+                    sip_headers: [
+                            { name: 'User-Agent', value: 'IM-client/OMA1.0 sipML5-v1.2015.03.18' },
+                            { name: 'Organization', value: 'Doubango Telecom' }
+                    ]
                 }
             );
 			
@@ -105,12 +115,7 @@
 
         	console.log("createSession");
             // create call session
-        	callSession = sipStack.newSession(s_type, {
-                video_local: document.getElementById('video-local'),
-                video_remote: document.getElementById('video-remote'),
-                audio_remote: document.getElementById('audio-remote'),
-                events_listener: { events: '*', listener: sipSessionListener } // optional: '*' means all events
-            });
+        	callSession = sipStack.newSession(s_type, callOptions);
             // make call
         	console.log("makecall");
             if (callSession.call(txtCalle.value) != 0) {
@@ -128,6 +133,8 @@
     }
     
     var sipEventsListener = function(e){
+
+        console.info('sip event = ' + e.type);
         switch (e.type) {
 	        case 'started': {
 	    	    try {
@@ -135,12 +142,12 @@
 	    	    	registerSession = sipStack.newSession('register', {
 	    	            expires: 200,
 	    	            events_listener: { events: '*', listener: sipSessionListener },
-//	    	            sip_caps: [
-//	    	                        { name: '+g.oma.sip-im', value: null },
-//	    	                        //{ name: '+sip.ice' }, // rfc5768: FIXME doesn't work with Polycom TelePresence
-//	    	                        { name: '+audio', value: null },
-//	    	                        { name: 'language', value: '\"en,fr\"' }
-//	    	                ]
+	    	            sip_caps: [
+	    	                        { name: '+g.oma.sip-im', value: null },
+	    	                        //{ name: '+sip.ice' }, // rfc5768: FIXME doesn't work with Polycom TelePresence
+	    	                        { name: '+audio', value: null },
+	    	                        { name: 'language', value: '\"en,fr\"' }
+	    	                ]
 	    	        });
 	    	    	registerSession.register();
 	    	    }
@@ -217,6 +224,7 @@
     }
     
     function sipSessionListener(e /* SIPml.Session.Event */) {
+        console.info('session event = ' + e.type);
         switch (e.type) {
             case 'connecting': case 'connected':
                 {

@@ -17,52 +17,65 @@
 <body>
 
 	<div class="container" style="background-color: lavender;"well-sm">
-
-		<div class="page-header">
-			<h3>Registration</h3>
+		<div class="row">
+			<div class="col-xs-4">
+				<div class="page-header">
+					<h3>Registration</h3>
+				</div>
+		
+				<div class="form-group">
+					<label style="width: 100%;" align="center" id="txtStatus"> </label>
+					<label for="name">User:</label> 
+					<input type="text" class="form-control" id="txtUser" placeholder="Enter username" style="width: 80%" value="niklas"> 
+					<br> 
+					<!-- <label for="sipAddress">Sip address:</label> 
+					<input type="text" class="form-control" id="txtSipAddress" placeholder="Enter sip address" style="width: 20%"> 
+					<br> -->
+					<label for="pwd">Password:</label> 
+					<input type="password" class="form-control" id="txtPwd" placeholder="Enter password" style="width: 80%" value="1234">
+					<br>
+		
+					<button id="btnLogin" class="btn btn-default" onclick='sipRegister();'>Login</button>
+					<button id="btnLogout" class="btn btn-default" onclick='sipUnRegister();'>Logout</button>
+				</div>
+			</div>
+			<div class="col-xs-4">
+			
+				<div class="page-header">
+					<h3>Call</h3>
+				</div>
+				
+				<div class="form-group">
+					<table>
+						<tr>
+							<td>
+								<label for="callee">Enter the ID to call:</label> 
+								<input type="text" class="form-control" id="txtCalle" placeholder="Enter username" style="width: 125%"">
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<br>
+								<button id="btnCall" class="btn btn-default" onclick='sipCall("call-audio");'>Call</button>
+								<button id="btnHangup" class="btn btn-default" onclick="sipHangup();">Hang Up</button>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<label style="width: 100%;" align="center" id="txtCallStatus"> </label>
+							</td>
+						</tr>
+					</table>
+				</div>
+			</div>
 		</div>
 
-		<div class="form-group">
-			<label style="width: 100%;" align="center" id="txtStatus"> </label>
-			<label for="name">User:</label> 
-			<input type="text" class="form-control" id="txtUser" placeholder="Enter username" style="width: 20%" value="niklas"> 
-			<br> 
-			<!-- <label for="sipAddress">Sip address:</label> 
-			<input type="text" class="form-control" id="txtSipAddress" placeholder="Enter sip address" style="width: 20%"> 
-			<br> -->
-			<label for="pwd">Password:</label> 
-			<input type="password" class="form-control" id="txtPwd" placeholder="Enter password" style="width: 20%" value="1234">
-			<br>
-
-			<button id="btnLogin" class="btn btn-default" onclick='sipRegister();'>Login</button>
-			<button id="btnLogout" class="btn btn-default" onclick='sipUnRegister();'>Logout</button>
-		</div>
 	</div>
 	&nbsp;
 
-	<div class="container" style="background-color: #d3d3d3;"well">
-		<div class="form-group">
-			<table>
-				<tr>
-					&nbsp;
-					<td>
-						<label for="callee">Enter the ID to call:</label> 
-						<input type="text" class="form-control" id="txtCalle" placeholder="Enter sip address" style="width: 125%"">
-					</td>
-					<td>
-						<label style="width: 100%;" align="center" id="txtCallStatus"> </label>
-					</td>
-				</tr>
-				<tr>
-					<td colspan="2">
-						<br>
-						<button id="btnCall" class="btn btn-default" onclick="sipCall('call-audio');">Call</button>
-						<button id="btnHangup" class="btn btn-default" onclick="sipHangup();">Hang Up</button>
-					</td>
-				</tr>
-			</table>
-		</div>
-	</div>
+
+	
+    <audio id="audio_remote" autoplay="autoplay" />
 
 </body>
 </html>
